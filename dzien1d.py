@@ -36,3 +36,4 @@ while True:
     lista.append(int(wejscie))
 
 print("Twoja lista ->", lista)
+
