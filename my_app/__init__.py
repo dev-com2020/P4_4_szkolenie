@@ -1,4 +1,5 @@
-from flask import Flask, request
+from flask import Flask, request, typing as ft
+from flask.views import View
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from my_app.hello.views import hello
@@ -26,11 +27,25 @@ db = SQLAlchemy()
 migrate = Migrate(app, db)
 db.init_app(app)
 
+
 @app.template_filter('format_currency')
 def format_currency_filter(amount):
     currency_code = ccy.countryccy(request.accept_languages.best[-2:] or 'USD')
     return '{0} {1}'.format(currency_code, amount)
 
+
+class GetPostRequest(View):
+    methods = ['GET', 'POST']
+
+    def dispatch_request(self):
+        if request.method == 'GET':
+            bar = request.args.get('foo', 'bar')
+        else:
+            bar = request.form.get('foo', 'bar')
+        return 'Simple request where foo is %s' % bar
+
+
+app.add_url_rule('/req2', view_func=GetPostRequest.as_view('req2'))
 
 from my_app.catalog.views import catalog
 

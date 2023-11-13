@@ -5,10 +5,10 @@ from my_app.catalog.models import Product, Category
 catalog = Blueprint('catalog', __name__)
 
 
-@catalog.route('/')
 @catalog.route('/catalog')
-def products():
-    products = Product.query.all()
+@catalog.route('/catalog/<int:page>')
+def products(page=1):
+    products = Product.query.paginate(page=page, per_page=10, error_out=False).items
     res = {}
     for product in products:
         res[product.id] = {
@@ -73,3 +73,13 @@ def some_req():
     else:
         bar = request.form.get('foo', 'bar')
     return 'Simple request where foo is %s' % bar
+
+
+@catalog.route('/test/<string(minlength=2, maxlength=3):code>')
+def get_name(code):
+    return code
+
+
+@catalog.route('/test2/<int(min=18,max=99):age>')
+def get_age(age):
+    return str(age)
