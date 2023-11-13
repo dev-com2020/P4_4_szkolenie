@@ -1,4 +1,4 @@
-from pakiet import kalk as k
+from DZ1.pakiet import kalk as k
 
 print(k.dodaj(4, 5))
 print(k.odejmij(4, 5))
