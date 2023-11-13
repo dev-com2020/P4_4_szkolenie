@@ -14,7 +14,7 @@ def home():
 @catalog.route('/catalog')
 @catalog.route('/catalog/<int:page>')
 def products(page=1):
-    products = Product.query.paginate(page=page, per_page=10, error_out=False).items
+    products = Product.query.paginate(page=page, per_page=10)
     return render_template('products.html', products=products)
 
 @catalog.route('/category/<id>')
