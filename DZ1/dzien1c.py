@@ -9,7 +9,7 @@ import os
 # f.write("dane7  dane8   dane9\n")
 # f.close()
 
-f = open("dane.txt", 'r')
+f = open("../dane.txt", 'r')
 linia1 = f.readline()
 linia2 = f.readline()
 linia3 = f.readline()
