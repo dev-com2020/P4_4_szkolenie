@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 
 from my_app.hello.models import MESSAGES
 
@@ -8,7 +8,8 @@ hello = Blueprint('hello', __name__)
 @hello.route('/')
 @hello.route('/hello')
 def hello_w():
-    return render_template('index.html')
+    mess = request.args.get('mess', MESSAGES)
+    return render_template('index.html', mess=mess)
 
 
 @hello.route('/show/<key>')
