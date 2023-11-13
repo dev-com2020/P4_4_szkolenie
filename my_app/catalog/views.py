@@ -64,3 +64,12 @@ def categories():
                 'price': product.price
             }
     return jsonify(res)
+
+
+@catalog.route('/req', methods=['GET', 'POST'])
+def some_req():
+    if request.method == 'GET':
+        bar = request.args.get('foo', 'bar')
+    else:
+        bar = request.form.get('foo', 'bar')
+    return 'Simple request where foo is %s' % bar
