@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for
 from my_app import db, app
 from my_app.catalog.models import Product, Category
 
@@ -22,7 +22,7 @@ def template_or_json(template=None):
     return decorated
 
 
-@app.errorhanlder(404)
+@app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
@@ -48,19 +48,23 @@ def category(id):
     return render_template('category.html', category=category)
 
 
-@catalog.route('/product-create', methods=['POST'])
+@catalog.route('/product-create', methods=['GET', 'POST'])
 def create_product():
-    name = request.form.get('name')
-    price = request.form.get('price')
-    categ_name = request.form.get('category')
-    category = Category.query.filter_by(name=categ_name).first()
-    if not category:
-        category = Category(categ_name)
+    if request.method == 'POST':
+        name = request.form.get('name')
+        price = request.form.get('price')
+        categ_name = request.form.get('category')
+        category = Category.query.filter_by(name=categ_name).first()
+        if not category:
+            category = Category(categ_name)
 
-    product = Product(name, price, category)
-    db.session.add(product)
-    db.session.commit()
-    return render_template('product.html', product=product)
+        product = Product(name, price, category)
+        db.session.add(product)
+        db.session.commit()
+        flash('Produkt %s został dodany' % name, 'success')
+        return redirect(
+            url_for('catalog.product', id=product.id))
+    return render_template('product-create.html')
 
 
 @catalog.route('/category-create', methods=['POST'])
