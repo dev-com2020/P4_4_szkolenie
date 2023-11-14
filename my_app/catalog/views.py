@@ -1,6 +1,8 @@
 from functools import wraps
 
 from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for
+from sqlalchemy.orm import join
+
 from my_app import db, app
 from my_app.catalog.models import Product, Category
 
@@ -86,6 +88,26 @@ def product(id):
 def categories():
     categories = Category.query.all()
     return render_template('categories.html', categories=categories)
+
+
+@catalog.route('/product-search')
+@catalog.route('/product-search/<int:page>')
+def product_search(page=1):
+    name = request.args.get('name')
+    price = request.args.get('price')
+    company = request.args.get('company')
+    category = request.args.get('category')
+    products = Product.query
+    if name:
+        products = products.filter(Product.name.like('%' + name + '%'))
+    if price:
+        products = products.filter(Product.price == price)
+    if company:
+        products = products.filter(Product.company.like('%' + company + '%'))
+    if category:
+        products = products.select_from(join(Product, Category)).filter(Category.name.like('%' + category + '%'))
+
+    return render_template('products.html', products=products.paginate(page, 10))
 
 
 @catalog.route('/req', methods=['GET', 'POST'])
