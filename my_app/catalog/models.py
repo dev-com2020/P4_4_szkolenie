@@ -1,3 +1,6 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, DecimalField, SelectField
+
 from my_app import db
 
 class Category(db.Model):
@@ -24,3 +27,8 @@ class Product(db.Model):
 
     def __repr__(self):
         return '<Product %d>' % self.id
+
+class ProductForm(FlaskForm):
+    name = StringField('Name')
+    price = DecimalField('Price')
+    category = SelectField('Category', coerce=int)
