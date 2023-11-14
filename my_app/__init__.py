@@ -51,8 +51,11 @@ class GetPostRequest(View):
 
 app.add_url_rule('/req2', view_func=GetPostRequest.as_view('req2'))
 
-from my_app.catalog.views import catalog
+from my_app.catalog.views import catalog, ProductView
 
+product_view = ProductView.as_view('product_view')
+app.add_url_rule('/api/', view_func=product_view, methods=['GET', 'POST'])
+app.add_url_rule('/api/<int:id>', view_func=product_view, methods=['GET', 'PUT', 'DELETE'])
 app.register_blueprint(catalog)
 
 with app.app_context():

@@ -1,3 +1,4 @@
+import json
 import os.path
 from functools import wraps
 
@@ -15,24 +16,20 @@ catalog = Blueprint('catalog', __name__)
 class ProductView(MethodView):
     def get(self, id=None, page=1):
         if not id:
-            products = Product.query.paginate(page, 10).items
-            res = {}
-            for product in products:
-                res[product.id] = {
+            products = Product.query.paginate(page=page, per_page=10).items
+        else:
+            products = [Product.query.get(id)]
+        if not products:
+            abort(404)
+        res = {}
+        for product in products:
+            res[product.id] = {
                     'name': product.name,
                     'price': product.price,
                     'category': product.category.name,
                 }
-        else:
-            product = Product.query.filter_by(id=id).first()
-            if not product:
-                abort(404)
-                res = json.dumps({
-                    'name': product.name,
-                    'price': product.price,
-                    'category': product.category.name,
-                })
-        return res
+        return json.dumps(res)
+
     def post(self):
         pass
     def put(self):
