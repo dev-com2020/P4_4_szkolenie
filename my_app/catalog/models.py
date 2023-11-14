@@ -1,16 +1,22 @@
+from decimal import Decimal
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, SelectField
+from wtforms.validators import InputRequired, NumberRange
 
 from my_app import db
+
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
+
     def __init__(self, name):
         self.name = name
 
     def __repr__(self):
         return '<Kategoria %d>' % self.id
+
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -28,7 +34,9 @@ class Product(db.Model):
     def __repr__(self):
         return '<Product %d>' % self.id
 
+
 class ProductForm(FlaskForm):
-    name = StringField('Name')
-    price = DecimalField('Price')
-    category = SelectField('Category', coerce=int)
+    name = StringField('Name', validators=[InputRequired()])
+    price = DecimalField('Price', validators=[InputRequired(), NumberRange(
+        min=Decimal('0.0'))])
+    category = SelectField('Category', validators=[InputRequired()], coerce=int)
