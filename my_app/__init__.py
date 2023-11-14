@@ -3,6 +3,7 @@ import os.path
 from flask import Flask, request, typing as ft
 from flask.views import View
 from flask_migrate import Migrate
+from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from my_app.hello.views import hello
 from my_app.product.views import product_blueprint
@@ -17,6 +18,8 @@ def create_app():
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
+api = Api(app)
+
 app.secret_key = "cn743289e"
 app.config["WTF_CSRF_SECRET_KEY"] = "nc7634$#"
 app.config.from_pyfile('setup.cfg')
@@ -51,12 +54,17 @@ class GetPostRequest(View):
 
 app.add_url_rule('/req2', view_func=GetPostRequest.as_view('req2'))
 
-from my_app.catalog.views import catalog, ProductView
+from my_app.catalog.views import catalog, ProductView, ProductApi
 
 product_view = ProductView.as_view('product_view')
 app.add_url_rule('/api/', view_func=product_view, methods=['GET', 'POST'])
 app.add_url_rule('/api/<int:id>', view_func=product_view, methods=['GET', 'PUT', 'DELETE'])
 app.register_blueprint(catalog)
+api.add_resource(
+    ProductApi,
+    '/apis/product',
+    '/apis/product/<int:id>'
+)
 
 with app.app_context():
     db.create_all()

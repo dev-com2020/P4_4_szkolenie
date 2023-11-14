@@ -4,6 +4,7 @@ from functools import wraps
 
 from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for, abort
 from flask.views import MethodView
+from flask_restful import Resource
 from sqlalchemy.orm import join
 from werkzeug.utils import secure_filename
 
@@ -24,16 +25,18 @@ class ProductView(MethodView):
         res = {}
         for product in products:
             res[product.id] = {
-                    'name': product.name,
-                    'price': product.price,
-                    'category': product.category.name,
-                }
+                'name': product.name,
+                'price': product.price,
+                'category': product.category.name,
+            }
         return json.dumps(res)
 
     def post(self):
         pass
+
     def put(self):
         pass
+
     def delete(self):
         pass
 
@@ -170,3 +173,18 @@ def get_name(code):
 @catalog.route('/test2/<int(min=18,max=99):age>')
 def get_age(age):
     return str(age)
+
+
+class ProductApi(Resource):
+    def get(self, id=None):
+        return 'To jest get z api'
+
+    def post(self):
+        pass
+
+    def put(self, id):
+        pass
+
+    def delete(self, id):
+        pass
+
