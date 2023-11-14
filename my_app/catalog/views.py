@@ -1,7 +1,8 @@
 import os.path
 from functools import wraps
 
-from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for
+from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for, abort
+from flask.views import MethodView
 from sqlalchemy.orm import join
 from werkzeug.utils import secure_filename
 
@@ -9,6 +10,35 @@ from my_app import db, app, ALLOWED_EXTENSIONS
 from my_app.catalog.models import Product, Category, ProductForm, CategoryForm
 
 catalog = Blueprint('catalog', __name__)
+
+
+class ProductView(MethodView):
+    def get(self, id=None, page=1):
+        if not id:
+            products = Product.query.paginate(page, 10).items
+            res = {}
+            for product in products:
+                res[product.id] = {
+                    'name': product.name,
+                    'price': product.price,
+                    'category': product.category.name,
+                }
+        else:
+            product = Product.query.filter_by(id=id).first()
+            if not product:
+                abort(404)
+                res = json.dumps({
+                    'name': product.name,
+                    'price': product.price,
+                    'category': product.category.name,
+                })
+        return res
+    def post(self):
+        pass
+    def put(self):
+        pass
+    def delete(self):
+        pass
 
 
 def allowed_file(filename):
