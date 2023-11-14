@@ -1,14 +1,38 @@
+from functools import wraps
+
 from flask import Blueprint, jsonify, request, render_template
-from my_app import db
+from my_app import db, app
 from my_app.catalog.models import Product, Category
 
 catalog = Blueprint('catalog', __name__)
 
 
+def template_or_json(template=None):
+    def decorated(f):
+        @wraps(f)
+        def decorated_fn(*args, **kwargs):
+            ctx = f(*args, **kwargs)
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest" or not template:
+                return jsonify(ctx)
+            else:
+                return render_template(template, **ctx)
+
+        return decorated_fn
+
+    return decorated
+
+
+@app.errorhanlder(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
 @catalog.route('/')
 @catalog.route('/home')
+@template_or_json('home.html')
 def home():
-    return render_template('home.html')
+    products = Product.query.all()
+    return {'ilość': len(products)}
 
 
 @catalog.route('/catalog')
@@ -16,6 +40,7 @@ def home():
 def products(page=1):
     products = Product.query.paginate(page=page, per_page=10)
     return render_template('products.html', products=products)
+
 
 @catalog.route('/category/<id>')
 def category(id):
