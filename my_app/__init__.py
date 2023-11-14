@@ -1,3 +1,5 @@
+import os.path
+
 from flask import Flask, request, typing as ft
 from flask.views import View
 from flask_migrate import Migrate
@@ -13,10 +15,11 @@ def create_app():
     return app
 
 
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
-
 app.secret_key = "cn743289e"
 app.config.from_pyfile('setup.cfg')
+app.config['UPLOAD_FOLDER'] = os.path.realpath('.') + '/static/images'
 # app.config.from_object('config.ProductionConfig')
 # app.register_blueprint(hello)
 # app.register_blueprint(product_blueprint)

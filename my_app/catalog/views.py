@@ -1,12 +1,18 @@
+import os.path
 from functools import wraps
 
 from flask import Blueprint, jsonify, request, render_template, flash, redirect, url_for
 from sqlalchemy.orm import join
+from werkzeug.utils import secure_filename
 
-from my_app import db, app
+from my_app import db, app, ALLOWED_EXTENSIONS
 from my_app.catalog.models import Product, Category, ProductForm, CategoryForm
 
 catalog = Blueprint('catalog', __name__)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.lower().rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 def template_or_json(template=None):
@@ -53,14 +59,15 @@ def category(id):
 @catalog.route('/product-create', methods=['GET', 'POST'])
 def create_product():
     form = ProductForm(meta={'csrf': False})
-    categories = [(c.id, c.name) for c in Category.query.all()]
-    form.category.choices = categories
-
     if form.validate_on_submit():
         name = form.name.data
         price = form.price.data
         category = Category.query.get_or_404(form.category.data)
-        product = Product(name, price, category)
+        image = form.image.data
+        if allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        product = Product(name, price, category, filename)
         db.session.add(product)
         db.session.commit()
         flash('Produkt %s został dodany' % name, 'success')

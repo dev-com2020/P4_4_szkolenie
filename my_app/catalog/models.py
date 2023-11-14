@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired
 from wtforms import StringField, DecimalField, SelectField
 from wtforms.validators import InputRequired, NumberRange, ValidationError
 
@@ -19,6 +20,7 @@ class Category(db.Model):
 
 
 class Product(db.Model):
+    image_path = db.Column(db.String(255))
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     price = db.Column(db.Float)
@@ -26,10 +28,11 @@ class Product(db.Model):
     category = db.relationship('Category', backref=db.backref('products', lazy='dynamic'))
     company = db.Column(db.String(100))
 
-    def __init__(self, name, price, category):
+    def __init__(self, name, price, category, image_path):
         self.name = name
         self.price = price
         self.category = category
+        self.image_path = image_path
 
     def __repr__(self):
         return '<Product %d>' % self.id
@@ -57,6 +60,7 @@ class ProductForm(NameForm):
     price = DecimalField('Price', validators=[InputRequired(), NumberRange(
         min=Decimal('0.0'))])
     category = CategoryField('Category', validators=[InputRequired()], coerce=int)
+    image = FileField('Product Image', validators=[FileRequired()])
 
 
 def check_duplicate_category(case_sensitive=True):
