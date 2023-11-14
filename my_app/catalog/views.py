@@ -58,7 +58,7 @@ def category(id):
 
 @catalog.route('/product-create', methods=['GET', 'POST'])
 def create_product():
-    form = ProductForm(meta={'csrf': False})
+    form = ProductForm(meta={'csrf': True})
     if form.validate_on_submit():
         name = form.name.data
         price = form.price.data

@@ -18,6 +18,7 @@ def create_app():
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
 app.secret_key = "cn743289e"
+app.config["WTF_CSRF_SECRET_KEY"] = "nc7634$#"
 app.config.from_pyfile('setup.cfg')
 app.config['UPLOAD_FOLDER'] = os.path.realpath('.') + '/static/images'
 # app.config.from_object('config.ProductionConfig')

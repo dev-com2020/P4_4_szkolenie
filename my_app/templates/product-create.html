@@ -3,7 +3,7 @@
 <div class="top-pad">
 <form method="post" action="{{ url_for('catalog.create_product') }}"
       role="form" enctype="multipart/form-data">
-
+    {{ form.csrf_token }}
     <div class="form-group">
         {{ form.name.label }}: {{ form.name() }}
     </div>
