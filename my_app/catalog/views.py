@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request, render_template, flash, redirect,
 from sqlalchemy.orm import join
 
 from my_app import db, app
-from my_app.catalog.models import Product, Category
+from my_app.catalog.models import Product, Category, ProductForm
 
 catalog = Blueprint('catalog', __name__)
 
@@ -52,6 +52,9 @@ def category(id):
 
 @catalog.route('/product-create', methods=['GET', 'POST'])
 def create_product():
+    form = ProductForm(meta={'csrf': False})
+    categories = [(c.id, c.name) for c in Category.query.all()]
+    form.category.choices = categories
     if request.method == 'POST':
         name = request.form.get('name')
         price = request.form.get('price')
@@ -66,7 +69,7 @@ def create_product():
         flash('Produkt %s został dodany' % name, 'success')
         return redirect(
             url_for('catalog.product', id=product.id))
-    return render_template('product-create.html')
+    return render_template('product-create.html', form=form)
 
 
 @catalog.route('/category-create', methods=['POST'])
