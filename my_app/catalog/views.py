@@ -77,7 +77,7 @@ def create_category():
     if form.validate_on_submit():
         name = form.name.data
         category = Category(name)
-        db.session(category)
+        db.session.add(category)
         db.session.commit()
         flash('Kategoria %s została dodana' % name, 'success')
         return redirect(
